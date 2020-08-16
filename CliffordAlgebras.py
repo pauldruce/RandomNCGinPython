@@ -17,7 +17,8 @@
 
 import numpy as np
 import cmath
-from pprint import pprint
+import itertools
+# from pprint import pprint
 
 
 class Clifford:
@@ -78,11 +79,11 @@ class Clifford:
             # Print out the generators
             print("The generators are:")
             print("pauli.x = ")  # Pauli Matrix = 1
-            pprint(self.pauli_1)
+            print(self.pauli_1)
             print("pauli.y = ")  # Pauli Matrix = 2
-            pprint(self.pauli_2)
+            print(self.pauli_2)
             print("pauli.z = ")  # Pauli Matrix = 3
-            pprint(self.pauli_3)
+            print(self.pauli_3)
             print("\n")
         else:
             # Print out the generators
@@ -90,11 +91,11 @@ class Clifford:
             for i, gen in enumerate(self.generators):
                 # Starts the gamma labels from one.
                 print("Gamma_{} = ".format(i + 1))
-                pprint(gen)
+                print(gen)
             print("\n")
 
         print("The chirality operator is:")
-        pprint(self.chirality)
+        print(self.chirality)
 
     """ setup():
 
@@ -132,24 +133,24 @@ class Clifford:
 
         # Type (0,2) setup
         elif self.p == 0 and self.q == 2:
-            self.gamma1 = np.matrix([[complex(0, 1), 0], [0, complex(0, -1)]])
-            self.gamma2 = np.matrix([[0, 1], [-1, 0]], dtype=np.complex)
+            self.gamma1 = np.array([[complex(0, 1), 0], [0, complex(0, -1)]])
+            self.gamma2 = np.array([[0, 1], [-1, 0]], dtype=np.complex)
             self.generators = [self.gamma1, self.gamma2]
             self.chirality = self.get_chirality(
                 self.p, self.q, self.generators)
 
         # Type (1,1) setup
         elif self.p == 1 and self.q == 1:
-            self.gamma1 = np.matrix([[1, 0], [0, -1]])
-            self.gamma2 = np.matrix([[0, 1], [-1, 0]])
+            self.gamma1 = np.array([[1, 0], [0, -1]], dtype=np.complex)
+            self.gamma2 = np.array([[0, 1], [-1, 0]], dtype=np.complex)
             self.generators = [self.gamma1, self.gamma2]
             self.chirality = self.get_chirality(
                 self.p, self.q, self.generators)
 
         # Type (2,0) setup
         elif self.p == 2 and self.q == 0:
-            self.gamma1 = np.matrix([[1, 0], [0, -1]])
-            self.gamma2 = np.matrix([[0, 1], [1, 0]])
+            self.gamma1 = np.array([[1, 0], [0, -1]], dtype=np.complex)
+            self.gamma2 = np.array([[0, 1], [1, 0]], dtype=np.complex)
             self.generators = [self.gamma1, self.gamma2]
             self.chirality = self.get_chirality(
                 self.p, self.q, self.generators)
@@ -259,15 +260,12 @@ class Clifford:
                 input_gens = holder_gens
 
             # Order the generators so the Hermitian elements are first, then the anti-Heritian
-            # WARNING: The operator .H only works for np.matrix types, not np.array.
-            # The comparision, gen.H == gen, results in an array of True/False values. Then all(gen.H==gen) returns True if they are
-            # all true and returns false if ANY of them are false.
             herm = []
             anti_herm = []
             for gen in input_gens:
-                if np.all(gen.H == gen) == True:
+                if np.array_equal(gen.conj().T, gen) == True:
                     herm.append(gen)
-                elif np.all(gen.H == gen) == False:
+                elif np.array_equal(gen.conj().T, gen) == False:
                     anti_herm.append(gen)
 
             # Set the generators to what has been calculated.
@@ -287,42 +285,42 @@ class Clifford:
             # TODO: figure out how to related all the different representations together
             elif self.p == 1 and self.q == 3:
                 # Define the dirac basis for type (1,3)
-                self.dirac0 = np.matrix(
-                    [[0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0]])
-                self.dirac1 = np.matrix(
-                    [[0, 0, 0, 1], [0, 0, 1, 0], [0, -1, 0, 0], [-1, 0, 0, 0]])
-                self.dirac2 = np.matrix([[0, 0, 0, complex(0, -1)], [0, 0, complex(0, 1), 0], [
-                                        0, complex(0, 1), 0, 0], [complex(0, -1), 0, 0, 0]])
-                self.dirac3 = np.matrix(
-                    [[0, 0, 1, 0], [0, 0, 0, -1], [-1, 0, 0, 0], [0, 1, 0, 0]])
+                self.dirac0 = np.array(
+                    [[0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0]], dtype=np.complex)
+                self.dirac1 = np.array(
+                    [[0, 0, 0, 1], [0, 0, 1, 0], [0, -1, 0, 0], [-1, 0, 0, 0]], dtype=np.complex)
+                self.dirac2 = np.array([[0, 0, 0, complex(0, -1)], [0, 0, complex(0, 1), 0], [
+                                        0, complex(0, 1), 0, 0], [complex(0, -1), 0, 0, 0]], dtype=np.complex)
+                self.dirac3 = np.array(
+                    [[0, 0, 1, 0], [0, 0, 0, -1], [-1, 0, 0, 0], [0, 1, 0, 0]], dtype=np.complex)
                 self.dirac_generators = [self.dirac0,
                                          self.dirac1, self.dirac2, self.dirac3]
                 self.dirac_chirality = self.get_chirality(
                     self.p, self.q, self.dirac_generators)
 
                 # Define the majorana basis
-                self.majorana0 = np.matrix([[0, 0, 0, complex(
-                    0, -1)], [0, 0, complex(0, 1), 0], [0, complex(0, -1), 0, 0], [complex(0, 1), 0, 0, 0]])
-                self.majorana1 = np.matrix([[complex(0, 1), 0, 0, 0], [0, complex(
-                    0, -1), 0, 0], [0, 0, complex(0, 1), 0], [0, 0, 0, complex(0, -1)]])
-                self.majorana2 = np.matrix([[0, 0, 0, complex(0, 1)], [0, 0, complex(
-                    0, -1), 0], [0, complex(0, -1), 0, 0], [complex(0, 1), 0, 0, 0]])
-                self.majorana3 = np.matrix([[0, complex(0, -1), 0, 0], [complex(0, -1), 0, 0, 0], [
-                                           0, 0, 0, complex(0, -1)], [0, 0, complex(0, 1), 0]])
+                self.majorana0 = np.array([[0, 0, 0, complex(
+                    0, -1)], [0, 0, complex(0, 1), 0], [0, complex(0, -1), 0, 0], [complex(0, 1), 0, 0, 0]], dtype=np.complex)
+                self.majorana1 = np.array([[complex(0, 1), 0, 0, 0], [0, complex(
+                    0, -1), 0, 0], [0, 0, complex(0, 1), 0], [0, 0, 0, complex(0, -1)]], dtype=np.complex)
+                self.majorana2 = np.array([[0, 0, 0, complex(0, 1)], [0, 0, complex(
+                    0, -1), 0], [0, complex(0, -1), 0, 0], [complex(0, 1), 0, 0, 0]], dtype=np.complex)
+                self.majorana3 = np.array([[0, complex(0, -1), 0, 0], [complex(0, -1), 0, 0, 0], [
+                                           0, 0, 0, complex(0, -1)], [0, 0, complex(0, 1), 0]], dtype=np.complex)
                 self.majorana_generators = [
                     self.majorana0, self.majorana1, self.majorana2, self.majorana3]
                 self.majorana_chirality = -1 * self.get_chirality(
                     self.p, self.q, self.majorana_generators)
 
                 # Define the Chiral basis
-                self.chiral0 = np.matrix(
-                    [[0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0]])
-                self.chiral1 = np.matrix(
-                    [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, -1], [0, 0, -1, 0]])
-                self.chiral2 = np.matrix([[0, 0, 0, complex(
-                    0, -1)], [0, 0, complex(0, 1), 0], [0, complex(0, 1), 0, 0], [complex(0, -1), 0, 0, 0]])
-                self.chiral3 = np.matrix(
-                    [[0, 0, 1, 0], [0, 0, 0, -1], [-1, 0, 0, 0], [0, 1, 0, 0]])
+                self.chiral0 = np.array(
+                    [[0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0]], dtype=np.complex)
+                self.chiral1 = np.array(
+                    [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, -1], [0, 0, -1, 0]], dtype=np.complex)
+                self.chiral2 = np.array([[0, 0, 0, complex(
+                    0, -1)], [0, 0, complex(0, 1), 0], [0, complex(0, 1), 0, 0], [complex(0, -1), 0, 0, 0]], dtype=np.complex)
+                self.chiral3 = np.array(
+                    [[0, 0, 1, 0], [0, 0, 0, -1], [-1, 0, 0, 0], [0, 1, 0, 0]], dtype=np.complex)
                 self.chiral_generators = [
                     self.chiral0, self.chiral1, self.chiral2, self.chiral3]
                 self.chiral_chirality = self.get_chirality(
@@ -332,3 +330,25 @@ class Clifford:
             self.chirality = self.get_chirality(
                 self.p, self.q, self.generators)
     """  ===== End of Setup ====  """
+
+    def get_odd_gamma_products(self):
+        """ Produce all the odd gamma products
+
+        The function inputs the cliff object (which contains the generators) for a given
+        Clifford module, it then extracts the uses these to calculate the necessary products
+        """
+
+        k = self.n - 1
+        # Number of odd products (we are doing n choose r for all odd r)
+        number = int(2**k)
+        # odd_products = np.zeros(number)
+        odd_products = []
+        # The plus one is to ensure that if there are an odd num of generators, then the prod of them all is included
+        for i in range(1, self.n + 1, 2):
+            perm = list(itertools.combinations(self.generators, i))
+            for x in perm:
+                if len(x) > 1:
+                    odd_products.append(np.linalg.multi_dot(x))
+                else:
+                    odd_products.append(x[0])
+        return odd_products
