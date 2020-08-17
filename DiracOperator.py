@@ -175,11 +175,11 @@ np.random.seed(t)
 odd_products = get_odd_gamma_products(cliff)
 
 # Initialise D: we set the weight A so we start with a much wide range of the parameter space
-
+start_time = time.time()
 weightA = 1 / 10  # If we use too large a value here, then the proposed starting Dirac causes the weight action to have a large imaginary component. So start with it ~1
 
-# D = random_Dirac_op(odd_products, N, weightA)
-D = D1
+D = random_Dirac_op(odd_products, N, weightA)
+# D = D1
 # D
 
 """
@@ -206,13 +206,12 @@ for i in range(20):
     print(acceptance_rate, num_moves, acceptance_rate / num_moves)
     print(action(D, g2, g4))
     # np.linalg.eigvals(D)
-
+print("--- %s seconds ---" % (time.time() - start_time))
 # It would be helpful to store the last Dirac, so we can "continue" the simulation after it reaches 20,0000 steps. For instance, for the type (1,3), 20,000 steps doesnt seem to be enough.
 # We can then "initialise" the Dirac with the last Dirac operator from the simulation.
 D1 = D
 
 
-# %%
 """
 Idea playground
 """
