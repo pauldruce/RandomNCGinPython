@@ -21,10 +21,10 @@ The limitation is that the actions get more and more complicated to code for the
 import numpy as np
 import itertools
 import cmath
-# from numba import jit, njit, complex128
+from numba import jit, njit, complex128
 
 
-# @njit(parallel=True, fastmath=True)
+@njit(fastmath=True)
 def comm(M):
     """ returns the commutator of a matrix as [M,-] = M x I - I x M.T
 
@@ -35,10 +35,10 @@ def comm(M):
     """
 
     return np.kron(M, np.eye(
-        M.shape[0], dtype=np.complex)) - np.kron(np.eye(M.shape[0], dtype=np.complex), M.T)
+        M.shape[0], dtype=np.complex128)) - np.kron(np.eye(M.shape[0], dtype=np.complex128), M.T)
 
 
-# @njit(parallel=True, fastmath=True)
+@njit(fastmath=True)
 def anticomm(M):
     """ returns the anti-commutator of a matrix as {M,-} = M x I + I x M.T
 
@@ -50,10 +50,10 @@ def anticomm(M):
     So this function returns {M,-} = M \otimes I + I \otimes M.T
     """
     return np.kron(M, np.eye(
-        M.shape[0], dtype=np.complex)) + np.kron(np.eye(M.shape[0], dtype=np.complex), M.T)
+        M.shape[0], dtype=np.complex128)) + np.kron(np.eye(M.shape[0], dtype=np.complex128), M.T)
 
 
-# @njit(parallel=True, fastmath=True)
+@njit(fastmath=True)
 def random_Hermitian(N):
     """
     Creates an NxN element of a Gaussian Hermitian Ensemble
@@ -64,7 +64,7 @@ def random_Hermitian(N):
     return m
 
 
-# @njit(parallel=True, fastmath=True)
+@njit(parallel=True, fastmath=True)
 def random_Dirac_op(odd_products, N, weightA, matdim):
     """ returns a random Dirac operator with entries uniformaly sampled between [-1,1] + i[-1,1].
 
@@ -77,7 +77,7 @@ def random_Dirac_op(odd_products, N, weightA, matdim):
     """
     step_size = np.random.normal(weightA, weightA)
     dirac_dim = matdim * N * N
-    D = np.zeros((dirac_dim, dirac_dim), dtype=np.complex)
+    D = np.zeros((dirac_dim, dirac_dim), dtype=np.complex128)
     for prod in odd_products:
         temp = random_Hermitian(N)
         if np.array_equal(prod.conj().T, prod) == True:
@@ -89,7 +89,7 @@ def random_Dirac_op(odd_products, N, weightA, matdim):
     return D
 
 
-# @njit(parallel=True, fastmath=True)
+@njit(fastmath=True)
 def action(D, g2, g4):
     """ calculates the action using the Dirac operators.
 
@@ -116,7 +116,7 @@ def action(D, g2, g4):
         raise ValueError("Your action wasn't real!")
 
 
-# @njit(parallel=True, fastmath=True)
+@njit(fastmath=True)
 def update_Dirac(old_D, g2, g4, weightA, acceptance_rate, N, matdim, odd_products):
     """ Updates the Dirac operator according to the Metropolis-Hastings algorithm
 

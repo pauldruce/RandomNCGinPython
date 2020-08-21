@@ -7,7 +7,7 @@ from numba import njit
 # Some dummy parameters for use when testing:
 p = 3
 q = 1
-N = 5
+N = 10
 g2 = -3.7
 g4 = 1
 # Get the clifford algebra for the model we are examining.
@@ -61,8 +61,7 @@ But to have the thermalisation time be ~1%, then we need to continue the simulat
 
 # We can then "initialise" the Dirac with the last Dirac operator from the simulation if we want to continnue the simulation.
 D1 = D
-# %%
-runMonteCarlo(odd_products, D, g2, g4, matdim)
+
 # %%
 
 %timeit runMonteCarlo(odd_products, D, g2, g4, matdim)
