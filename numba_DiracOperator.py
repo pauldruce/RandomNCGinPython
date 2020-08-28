@@ -23,10 +23,10 @@ import itertools
 import cmath
 
 # Naive numba implementation - going to try and make this work well. 
-from numba import jit, njit, complex128
+from numba import njit, complex128
 
 
-@njit(fastmath=True)
+@njit()
 def comm(M):
     """ returns the commutator of a matrix as [M,-] = M x I - I x M.T
 
@@ -40,7 +40,7 @@ def comm(M):
         M.shape[0], dtype=np.complex128)) - np.kron(np.eye(M.shape[0], dtype=np.complex128), M.T)
 
 
-@njit(fastmath=True)
+@njit()
 def anticomm(M):
     """ returns the anti-commutator of a matrix as {M,-} = M x I + I x M.T
 
@@ -55,7 +55,7 @@ def anticomm(M):
         M.shape[0], dtype=np.complex128)) + np.kron(np.eye(M.shape[0], dtype=np.complex128), M.T)
 
 
-@njit(fastmath=True)
+@njit()
 def random_Hermitian(N):
     """
     Creates an NxN element of a Gaussian Hermitian Ensemble
@@ -66,7 +66,7 @@ def random_Hermitian(N):
     return m
 
 
-@njit(parallel=True, fastmath=True)
+@njit(parallel=True)
 def random_Dirac_op(odd_products, N, weightA, matdim):
     """ returns a random Dirac operator with entries uniformaly sampled between [-1,1] + i[-1,1].
 
@@ -91,7 +91,7 @@ def random_Dirac_op(odd_products, N, weightA, matdim):
     return D
 
 
-@njit(fastmath=True)
+@njit()
 def action(D, g2, g4):
     """ calculates the action using the Dirac operators.
 
@@ -118,7 +118,7 @@ def action(D, g2, g4):
         raise ValueError("Your action wasn't real!")
 
 
-@njit(fastmath=True)
+@njit()
 def update_Dirac(old_D, g2, g4, weightA, acceptance_rate, N, matdim, odd_products):
     """ Updates the Dirac operator according to the Metropolis-Hastings algorithm
 

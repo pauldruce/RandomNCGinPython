@@ -23,6 +23,7 @@ import itertools
 import cmath
 
 
+
 def comm(M):
     """ returns the commutator of a matrix as [M,-] = M x I - I x M.T
 
@@ -33,8 +34,7 @@ def comm(M):
     """
 
     return np.kron(M, np.eye(
-        M.shape[0], dtype=np.complex)) - np.kron(np.eye(M.shape[0], dtype=np.complex), M.T)
-
+        M.shape[0], dtype=np.complex128)) - np.kron(np.eye(M.shape[0], dtype=np.complex128), M.T)
 
 def anticomm(M):
     """ returns the anti-commutator of a matrix as {M,-} = M x I + I x M.T
@@ -47,7 +47,7 @@ def anticomm(M):
     So this function returns {M,-} = M \otimes I + I \otimes M.T
     """
     return np.kron(M, np.eye(
-        M.shape[0], dtype=np.complex)) + np.kron(np.eye(M.shape[0], dtype=np.complex), M.T)
+        M.shape[0], dtype=np.complex128)) + np.kron(np.eye(M.shape[0], dtype=np.complex128), M.T)
 
 
 def random_Hermitian(N):
@@ -72,7 +72,7 @@ def random_Dirac_op(odd_products, N, weightA, matdim):
     """
     step_size = np.random.normal(weightA, weightA)
     dirac_dim = matdim * N * N
-    D = np.zeros((dirac_dim, dirac_dim), dtype=np.complex)
+    D = np.zeros((dirac_dim, dirac_dim), dtype=np.complex128)
     for prod in odd_products:
         temp = random_Hermitian(N)
         if np.array_equal(prod.conj().T, prod) == True:
