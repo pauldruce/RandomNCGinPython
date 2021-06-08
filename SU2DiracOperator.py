@@ -13,28 +13,39 @@ import cmath
 
 # To be converted from cpp to python.
 
+""" function:  sun_generators
+
+returns the three Lie algebr generators for su2 in the basis [L_1,L_2] = L_3 and cycles.
+
+"""
+
 
 def su_generators(n):
-    L1 = np.zeros((n, n), dtype=np.complex128)
-    L2 = np.zeros((n, n), dtype=np.complex128)
-    L3 = np.zeros((n, n), dtype=np.complex128)
-    for i in range(0, n):  # Need to figure out how to do this via python/numpy arrays
-    L1[i, i + 1] = 1j * sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2
-    L1[i + 1, i] = 1j * sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2
-    L2[i, i + 1] = (sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2)
-    L2[i + 1, i] = (-sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2)
-    L3[i, i] = ((n + 1.) / 2 - (i + 1)) * 1j
+    j = (n - 1) / 2
+    print(j)
+    L1 = np.zeros((n, n), dtype=np.complex256)
+    L2 = np.zeros((n, n), dtype=np.complex256)
+    L3 = np.zeros((n, n), dtype=np.complex256)
+    for index in range(n - 1):
+        i = index + 1
+        L1[index, index + 1] = -1j * (1 / 2) * np.sqrt((j + 1) * (i + (i + 1) - 1) - i * (i + 1))
+        L1[index + 1, index] = -1j * (1 / 2) * np.sqrt((j + 1) * (i + (i + 1) - 1) - i * (i + 1))
+        L2[index, index + 1] = -1j * -1j * \
+            (1 / 2) * np.sqrt((j + 1) * (i + (i + 1) - 1) - i * (i + 1))
+        L2[index + 1, index] = -1j * 1j * \
+            (1 / 2) * np.sqrt((j + 1) * (i + (i + 1) - 1) - i * (i + 1))
+        L3[index, index] = -1j * (j + 1 - i)
+    L3[n - 1, n - 1] = -1j * (j + 1 - n)
     return L1, L2, L3
 
 
-L1, L2, L3 = su_generators(10)
+L1, L2, L3 = su_generators(3)
+L1
+L2
 L3
-# for i in range(0, n):  # Need to figure out how to do this via python/numpy arrays
-# L1[i, i + 1] = cmath.j * sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2;
-# L1(i + 1, i).imag() = sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2;
-# L2(i, i + 1) = sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2;
-# L2(i + 1, i) = -sqrt(((n + 1) / 2.) * (2 * i + 2) - (i + 2) * (i + 1)) / 2; 		}
-# L3(i, i).imag() = ((n + 1.) / 2 - (i + 1)); 		}
+np.dot(L1, L2) - np.dot(L2, L1)
+
+L3
 
 
 def random_SU2_Dirac_op(odd_products, N, weightA, matdim):
