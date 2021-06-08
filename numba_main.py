@@ -2,8 +2,10 @@ import itertools
 import time
 from CliffordAlgebras import Clifford
 import DiracOperator
+# import numba_DiracOperator as DiracOperator
 import numpy as np
 from numba import njit
+from numba.typed import List
 # Some dummy parameters for use when testing:
 p = 3
 q = 1
@@ -13,8 +15,15 @@ g4 = 1
 # Get the clifford algebra for the model we are examining.
 cliff = Clifford(p, q)
 cliff.introduce()
-odd_products = cliff.get_odd_gamma_products()
-# odd_products = np.array(odd_products, order='C')
+
+# odd_products = cliff.get_odd_gamma_products()
+
+# Fixing a numba error.
+odd_products = List()
+[odd_products.append(x) for x in cliff.get_odd_gamma_products()]
+odd_products
+# odd_products = np.array(odd_products[:], order='C')[:]
+# odd_products
 # %%
 
 """
@@ -52,7 +61,8 @@ def runMonteCarlo(odd_products, D, g2, g4, matdim):
         print(DiracOperator.action(D, g2, g4))
         # np.linalg.eigvals(D)
 
-@njit()
+
+# @njit()
 def numba_runMonteCarlo(odd_products, D, g2, g4, matdim):
     weightA = 1e-2 / 7
     num_moves = 0
@@ -78,7 +88,10 @@ But to have the thermalisation time be ~1%, then we need to continue the simulat
 # We can then "initialise" the Dirac with the last Dirac operator from the simulation if we want to continnue the simulation.
 D1 = D
 # %%
+# numba_runMonteCarlo(odd_products, D, g2, g4, matdim)
 runMonteCarlo(odd_products, D, g2, g4, matdim)
 # %%
 
 %timeit runMonteCarlo(odd_products, D, g2, g4, matdim)
+# %timeit numba_runMonteCarlo(odd_products, D, g2, g4, matdim)
+# 15.7 s ± 543 ms per loop for uunoptimised

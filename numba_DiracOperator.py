@@ -22,7 +22,7 @@ import numpy as np
 import itertools
 import cmath
 
-# Naive numba implementation - going to try and make this work well. 
+# Naive numba implementation - going to try and make this work well.
 from numba import njit, complex128
 
 

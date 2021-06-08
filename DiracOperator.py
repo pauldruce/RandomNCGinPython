@@ -23,7 +23,6 @@ import itertools
 import cmath
 
 
-
 def comm(M):
     """ returns the commutator of a matrix as [M,-] = M x I - I x M.T
 
@@ -35,6 +34,7 @@ def comm(M):
 
     return np.kron(M, np.eye(
         M.shape[0], dtype=np.complex128)) - np.kron(np.eye(M.shape[0], dtype=np.complex128), M.T)
+
 
 def anticomm(M):
     """ returns the anti-commutator of a matrix as {M,-} = M x I + I x M.T
